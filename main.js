@@ -53,7 +53,8 @@ app.on('ready', () => {
           icon: `${__dirname}/images/StocksBar.png`,
           title: 'About',
           message: 'StocksBar',
-          detail: 'Version 1.1.3',
+          detail: 'Version 1.1.3c by Chihane\n' +
+              'Forked from: https://github.com/emtry/StocksBar',
           buttons: ['确定']
         })
       }
@@ -71,27 +72,29 @@ app.on('ready', () => {
   tray.setContextMenu(contextMenu)
 
   if (store.get('symbol') == null) {
-    store.set('symbol', "sh000300");
+    store.set('symbol', "002903");
   }
 
   waitUntil()
     .interval(2000)
     .times(Infinity)
     .condition(function() {
-      var url = 'http://hq.sinajs.cn/list=s_' + store.get('symbol')
+      var url = 'http://fundgz.1234567.com.cn/js/' + store.get('symbol') + '.js'
       request({
         url: url,
         encoding: null
       }, (err, res, body) => {
-        // console.log(body)
-        if (body != null) {
-          var str = iconv.decode(body, 'GBK')
-          var ar = str.split("\"")
-          var arr = ar[1].split(",")
-          tray.setTitle(arr[3] + "%")
-          global.sharedObject.name = arr[0]
-          global.sharedObject.price = arr[1]
-          global.sharedObject.per = arr[3]
+        if (res.statusCode === 200 && body != null) {
+          var bodyStr = iconv.decode(body, 'UTF-8')
+          var data = bodyStr.substr(8, bodyStr.length - 8 - 2)
+          data = JSON.parse(data)
+          var name = data['name']
+          var price = data['gsz']
+          var per = data['gszzl']
+          tray.setTitle(per + "%")
+          global.sharedObject.name = name
+          global.sharedObject.price = price
+          global.sharedObject.per = per
         } else {
           tray.setTitle("%")
           global.sharedObject.per = ''
