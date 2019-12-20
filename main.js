@@ -84,7 +84,7 @@ app.on('ready', () => {
         url: url,
         encoding: null
       }, (err, res, body) => {
-        if (res.statusCode === 200 && body != null) {
+        if (res && res.statusCode === 200 && body != null) {
           var bodyStr = iconv.decode(body, 'UTF-8')
           var data = bodyStr.substr(8, bodyStr.length - 8 - 2)
           data = JSON.parse(data)
